@@ -1,0 +1,18 @@
+// Role-Based Access Guard Component
+// Location: src/components/RoleGuard.jsx
+// Purpose: Restrict access based on user role
+
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+
+const RoleGuard = ({ children, allowedRoles }) => {
+  const role = localStorage.getItem('role');
+
+  if (!role || !allowedRoles.includes(role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
+};
+
+export default RoleGuard;

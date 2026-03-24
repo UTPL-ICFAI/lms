@@ -1,0 +1,15 @@
+// Frontend .env Configuration Template
+// Location: .env.local
+
+# API Configuration
+REACT_APP_API_URL=http://localhost:8000/api
+
+# JWT Configuration
+REACT_APP_JWT_KEY=token
+
+# App Configuration (optional)
+REACT_APP_APP_NAME=LMS
+REACT_APP_APP_VERSION=1.0.0
+
+# For production
+# REACT_APP_API_URL=https://your-api-domain.com/api
