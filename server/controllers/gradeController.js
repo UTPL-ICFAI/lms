@@ -1,11 +1,12 @@
 const Grade = require("../models/Grade");
 const Assignment = require("../models/Assignment");
 const Course = require("../models/Course");
+const Submission = require("../models/Submission");
 const { notifyUsers } = require("../utils/notify");
 
 exports.createGrade = async (req, res) => {
   try {
-    const { assignmentId, studentId, score, feedback } = req.body;
+    const { assignmentId, studentId, score, feedback, evaluatedFileUrl } = req.body;
 
     const assignment = await Assignment.findOne({ _id: assignmentId, isDeleted: false });
     if (!assignment) return res.status(404).json({ message: "Assignment not found" });
@@ -17,14 +18,33 @@ exports.createGrade = async (req, res) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
+    const uploadedEvaluatedUrl = req.file
+      ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+      : "";
+
+    const updatePayload = {
+      score,
+      feedback: feedback || "",
+      gradedBy: req.user._id,
+    };
+
+    if (uploadedEvaluatedUrl) {
+      updatePayload.evaluatedFileUrl = uploadedEvaluatedUrl;
+      updatePayload.evaluatedFileName = req.file?.originalname || "";
+    } else if (evaluatedFileUrl) {
+      updatePayload.evaluatedFileUrl = evaluatedFileUrl;
+      updatePayload.evaluatedFileName = "";
+    }
+
     const grade = await Grade.findOneAndUpdate(
       { assignment: assignmentId, student: studentId },
-      {
-        score,
-        feedback: feedback || "",
-        gradedBy: req.user._id,
-      },
+      updatePayload,
       { upsert: true, new: true }
+    );
+
+    await Submission.findOneAndUpdate(
+      { assignment: assignmentId, student: studentId },
+      { status: "graded" }
     );
 
     await notifyUsers(

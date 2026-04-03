@@ -7,6 +7,7 @@ const { upload } = require("../middleware/uploadMiddleware");
 const {
   createLecture,
   getLecturesByCourse,
+  deleteLecture,
 } = require("../controllers/lectureController");
 
 router.post(
@@ -17,5 +18,6 @@ router.post(
   createLecture
 );
 router.get("/course/:courseId", protect, getLecturesByCourse);
+router.delete("/:id", protect, authorizeRoles("faculty", "admin"), deleteLecture);
 
 module.exports = router;

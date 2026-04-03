@@ -16,6 +16,7 @@ import {
   Bot,
   Award,
   VideoIcon,
+  HelpCircle,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
@@ -38,6 +39,7 @@ const menuItems = {
     { label: 'Materials', path: '/faculty/materials', icon: FileText },
     { label: 'Lectures', path: '/faculty/lectures', icon: Video },
     { label: 'Assignments', path: '/faculty/assignments', icon: ClipboardList },
+    { label: 'Doubts', path: '/faculty/doubts', icon: HelpCircle },
     { label: 'Live Classes', path: '/faculty/live', icon: VideoIcon },
     { label: 'Calendar', path: '/faculty/calendar', icon: Calendar },
   ],
@@ -49,6 +51,7 @@ const menuItems = {
     { label: 'Materials', path: '/student/materials', icon: FileText },
     { label: 'Lectures', path: '/student/lectures', icon: Video },
     { label: 'Assignments', path: '/student/assignments', icon: ClipboardList },
+    { label: 'Doubts', path: '/student/doubts', icon: HelpCircle },
     { label: 'Grades', path: '/student/grades', icon: GraduationCap },
     { label: 'Forum', path: '/student/forum', icon: MessageSquare },
     { label: 'AI Assistant', path: '/student/assistant', icon: Bot },
@@ -67,20 +70,29 @@ export const Sidebar = ({ isOpen, onClose }) => {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 bg-gray-900 text-white transition-transform md:static md:translate-x-0 ${
+        className={`fixed left-0 top-0 z-40 h-[100dvh] w-[min(100vw,16rem)] max-w-[85vw] bg-gray-900 text-white shadow-xl transition-transform duration-200 ease-out md:static md:z-auto md:w-64 md:max-w-none md:shadow-none md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-6">
-          <h1 className="text-2xl font-bold">LMS</h1>
+        <div className="p-4 sm:p-6 flex items-center justify-between gap-2 border-b border-gray-800 md:border-0">
+          <h1 className="text-xl sm:text-2xl font-bold">LMS</h1>
+          <button
+            type="button"
+            className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-gray-800"
+            onClick={onClose}
+            aria-label="Close menu"
+          >
+            <X size={22} />
+          </button>
         </div>
 
-        <nav className="space-y-2 px-4">
+        <nav className="space-y-1 px-3 pb-6 overflow-y-auto max-h-[calc(100dvh-5rem)] md:max-h-none">
           {items.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.path
@@ -88,15 +100,15 @@ export const Sidebar = ({ isOpen, onClose }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-3 sm:px-4 py-3 rounded-lg min-h-[48px] ${
                   isActive
                     ? 'bg-blue-600'
                     : 'hover:bg-gray-800'
                 }`}
                 onClick={onClose}
               >
-                <Icon size={20} />
-                <span>{item.label}</span>
+                <Icon size={20} className="shrink-0" />
+                <span className="text-sm sm:text-base leading-snug">{item.label}</span>
               </Link>
             )
           })}
@@ -136,36 +148,43 @@ export const Navbar = ({ sidebarOpen, onToggleSidebar }) => {
 
   return (
     <>
-      <nav className="bg-white shadow-md">
-        <div className="flex items-center justify-between px-6 py-4">
+      <nav className="bg-white shadow-md sticky top-0 z-30">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 min-h-[56px]">
           <button
+            type="button"
             onClick={onToggleSidebar}
-            className="md:hidden"
+            className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100"
+            aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          <div className="flex-1" />
+          <span className="md:hidden font-bold text-gray-800 truncate flex-1 min-w-0 text-sm sm:text-base">
+            LMS
+          </span>
 
-          <div className="flex items-center gap-6">
+          <div className="hidden md:block flex-1 min-w-0" />
+
+          <div className="flex items-center gap-2 sm:gap-4 ml-auto">
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setOpen((p) => !p)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
                 aria-label="Notifications"
+                aria-expanded={open}
               >
                 <Bell size={20} className="text-gray-600" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5">
-                    {unreadCount}
+                  <span className="absolute top-1 right-1 bg-red-600 text-white text-[10px] leading-none rounded-full min-w-[1.25rem] h-5 px-1 flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
               </button>
               {open && (
-                <div className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50">
-                  <div className="p-3 border-b font-semibold">Notifications</div>
-                  <div className="max-h-80 overflow-auto">
+                <div className="fixed inset-x-3 top-[56px] sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 w-auto sm:w-80 max-w-[calc(100vw-1.5rem)] bg-white border rounded-lg shadow-lg z-50">
+                  <div className="p-3 border-b font-semibold text-sm sm:text-base">Notifications</div>
+                  <div className="max-h-[min(70vh,20rem)] overflow-y-auto overscroll-contain">
                     {notifications.length === 0 ? (
                       <div className="p-3 text-sm text-gray-600">No notifications</div>
                     ) : (
@@ -201,13 +220,15 @@ export const Navbar = ({ sidebarOpen, onToggleSidebar }) => {
                 </div>
               )}
             </div>
-            <div className="text-right">
-              <p className="font-semibold text-gray-800">{user?.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+            <div className="text-right hidden xs:block min-w-0 max-w-[140px] sm:max-w-[200px]">
+              <p className="font-semibold text-gray-800 text-sm truncate">{user?.name}</p>
+              <p className="text-xs text-gray-500 capitalize truncate">{user?.role}</p>
             </div>
             <button
+              type="button"
               onClick={handleLogout}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Log out"
             >
               <LogOut size={20} className="text-gray-600" />
             </button>
@@ -223,15 +244,19 @@ export const DashboardLayout = ({ children, title }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen min-w-0 bg-gray-50">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         <Navbar
           sidebarOpen={sidebarOpen}
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         />
-        <main className="flex-1 p-6 overflow-auto">
-          {title && <h1 className="text-3xl font-bold mb-6">{title}</h1>}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden overflow-y-auto w-full max-w-[1600px] mx-auto">
+          {title && (
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 break-words">
+              {title}
+            </h1>
+          )}
           {children}
         </main>
       </div>

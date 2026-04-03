@@ -2,12 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  @apply transition-all duration-200;
+/* Prevent accidental horizontal scroll on small viewports */
+html {
+  @apply overflow-x-hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  @apply bg-gray-50;
+  @apply bg-gray-50 text-gray-900 antialiased min-h-screen;
+  font-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+}
+
+/* Smooth transitions only on interactive elements (better perf than * { transition }) */
+a,
+button,
+input,
+select,
+textarea,
+[role="button"] {
+  @apply transition-colors duration-200;
+}
+
+img,
+video,
+iframe,
+svg {
+  @apply max-w-full h-auto;
 }
 
 .container {
@@ -31,11 +51,11 @@ body {
 }
 
 .card {
-  @apply bg-white rounded-lg shadow-md p-6;
+  @apply bg-white rounded-lg shadow-md p-4 sm:p-6;
 }
 
 .input {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+  @apply w-full min-h-[44px] px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base;
 }
 
 .table-row {

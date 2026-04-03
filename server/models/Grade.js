@@ -14,6 +14,8 @@ const gradeSchema = new mongoose.Schema(
     },
     score: { type: Number, required: true },
     feedback: { type: String, default: "" },
+    evaluatedFileUrl: { type: String, default: "" },
+    evaluatedFileName: { type: String, default: "" },
     gradedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

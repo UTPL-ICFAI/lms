@@ -62,6 +62,17 @@ export const FacultyLecturesPage = () => {
     }
   }
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this lecture?')) return
+    try {
+      await lectureService.remove(id)
+      toast.success('Lecture deleted')
+      await fetchLectures(selectedCourseId)
+    } catch (err) {
+      handleApiError(err)
+    }
+  }
+
   return (
     <DashboardLayout title="Video Lectures">
       {loading ? (
@@ -106,6 +117,11 @@ export const FacultyLecturesPage = () => {
                   >
                     Open video
                   </a>
+                  <div className="mt-4">
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(l._id)}>
+                      Delete
+                    </Button>
+                  </div>
                 </Card>
               ))}
             </div>

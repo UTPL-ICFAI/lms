@@ -1,5 +1,16 @@
 const mongoose = require("mongoose");
 
+const submissionVersionSchema = new mongoose.Schema(
+  {
+    fileUrl: { type: String, default: "" },
+    textContent: { type: String, default: "" },
+    fileName: { type: String, default: "" },
+    fileSize: { type: Number, default: 0 },
+    submittedAt: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+
 const submissionSchema = new mongoose.Schema(
   {
     assignment: {
@@ -12,7 +23,20 @@ const submissionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    fileUrl: { type: String, required: true },
+    fileUrl: { type: String, default: "" },
+    textContent: { type: String, default: "" },
+    fileName: { type: String, default: "" },
+    fileSize: { type: Number, default: 0 },
+    submittedAt: { type: Date, default: Date.now },
+    lastSubmittedAt: { type: Date, default: Date.now },
+    status: {
+      type: String,
+      enum: ["submitted", "resubmitted", "graded", "late_submission"],
+      default: "submitted",
+    },
+    isLate: { type: Boolean, default: false },
+    versions: [submissionVersionSchema],
+    versionCount: { type: Number, default: 1 },
   },
   { timestamps: true }
 );

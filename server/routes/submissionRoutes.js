@@ -7,6 +7,8 @@ const { upload } = require("../middleware/uploadMiddleware");
 const {
   createSubmission,
   getSubmissionsByAssignment,
+  getMySubmissionForAssignment,
+  deleteMySubmissionForAssignment,
 } = require("../controllers/submissionController");
 
 router.post(
@@ -21,6 +23,18 @@ router.get(
   protect,
   authorizeRoles("faculty", "admin"),
   getSubmissionsByAssignment
+);
+router.get(
+  "/my/:assignmentId",
+  protect,
+  authorizeRoles("student"),
+  getMySubmissionForAssignment
+);
+router.delete(
+  "/my/:assignmentId",
+  protect,
+  authorizeRoles("student"),
+  deleteMySubmissionForAssignment
 );
 
 module.exports = router;

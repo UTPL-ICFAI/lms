@@ -90,4 +90,7 @@ app.use("/api/calendar", calendarRoutes);
 const paymentRoutes = require("./routes/paymentRoutes");
 app.use("/api/payments", paymentRoutes);
 
+const doubtRoutes = require("./routes/doubtRoutes");
+app.use("/api/doubts", doubtRoutes);
+
 module.exports = app;

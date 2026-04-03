@@ -52,3 +52,24 @@ exports.getLecturesByCourse = async (req, res) => {
   }
 };
 
+exports.deleteLecture = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const lecture = await VideoLecture.findOne({ _id: id, isDeleted: false });
+    if (!lecture) return res.status(404).json({ message: "Lecture not found" });
+
+    const isOwner = lecture.uploadedBy.toString() === req.user._id.toString();
+    if (!isOwner && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    lecture.isDeleted = true;
+    lecture.deletedAt = new Date();
+    await lecture.save();
+
+    res.json({ message: "Lecture deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+

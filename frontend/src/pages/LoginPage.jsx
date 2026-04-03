@@ -57,10 +57,12 @@ export const LoginPage = () => {
   const demo = DEMO_BY_ROLE[role]
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-2">LMS</h1>
-        <p className="text-center text-gray-600 mb-6">Learning Management System</p>
+    <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800 px-4 py-8 sm:py-12">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-2">LMS</h1>
+        <p className="text-center text-gray-600 text-sm sm:text-base mb-6">
+          Learning Management System
+        </p>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>

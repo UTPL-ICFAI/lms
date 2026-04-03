@@ -15,6 +15,13 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
+  // Important: let the browser set multipart/form-data boundaries for FormData.
+  // If we keep application/json here, file uploads fail on backend multer routes.
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  }
+
   return config
 })
 

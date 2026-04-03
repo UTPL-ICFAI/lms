@@ -10,6 +10,8 @@ const assignmentSchema = new mongoose.Schema(
       required: true,
     },
     dueDate: { type: Date, required: true },
+    allowLateSubmission: { type: Boolean, default: false },
+    allowResubmission: { type: Boolean, default: true },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

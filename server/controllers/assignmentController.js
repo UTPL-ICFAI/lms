@@ -4,7 +4,15 @@ const { notifyUsers } = require("../utils/notify");
 
 exports.createAssignment = async (req, res) => {
   try {
-    const { title, description, courseId, dueDate, attachmentUrl } = req.body;
+    const {
+      title,
+      description,
+      courseId,
+      dueDate,
+      attachmentUrl,
+      allowLateSubmission,
+      allowResubmission,
+    } = req.body;
 
     const course = await Course.findOne({ _id: courseId, isDeleted: false });
     if (!course) return res.status(404).json({ message: "Course not found" });
@@ -23,6 +31,8 @@ exports.createAssignment = async (req, res) => {
       description: description || "",
       course: courseId,
       dueDate: new Date(dueDate),
+      allowLateSubmission: String(allowLateSubmission) === "true",
+      allowResubmission: String(allowResubmission ?? "true") !== "false",
       createdBy: req.user._id,
       attachmentUrl: finalAttachmentUrl,
     });

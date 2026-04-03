@@ -61,6 +61,7 @@ export const materialService = {
 export const lectureService = {
   create: (data) => api.post('/lectures', data),
   getByCourse: (courseId) => api.get(`/lectures/course/${courseId}`),
+  remove: (id) => api.delete(`/lectures/${id}`),
 }
 
 export const assignmentService = {
@@ -71,6 +72,8 @@ export const assignmentService = {
 export const submissionService = {
   submit: (data) => api.post('/submissions', data),
   getByAssignment: (assignmentId) => api.get(`/submissions/assignment/${assignmentId}`),
+  getMine: (assignmentId) => api.get(`/submissions/my/${assignmentId}`),
+  deleteMine: (assignmentId) => api.delete(`/submissions/my/${assignmentId}`),
 }
 
 export const gradeService = {
@@ -116,4 +119,13 @@ export const liveClassService = {
 export const calendarService = {
   create: (data) => api.post('/calendar', data),
   getForUser: (userId) => api.get(`/calendar/user/${userId}`),
+}
+
+export const doubtService = {
+  create: (data) => api.post('/doubts', data),
+  getByStudent: (studentId) => api.get(`/doubts/student/${studentId}`),
+  getByCourse: (courseId) => api.get(`/doubts/course/${courseId}`),
+  respond: (doubtId, response) => api.put(`/doubts/${doubtId}/respond`, { response }),
+  updateStatus: (doubtId, status) => api.put(`/doubts/${doubtId}/status`, { status }),
+  remove: (doubtId) => api.delete(`/doubts/${doubtId}`),
 }

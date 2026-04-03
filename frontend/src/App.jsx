@@ -19,6 +19,7 @@ import { FacultyNotices } from './pages/faculty/Notices'
 import { FacultyMaterialsPage } from './pages/faculty/Materials'
 import { FacultyLecturesPage } from './pages/faculty/Lectures'
 import { FacultyAssignmentsPage } from './pages/faculty/Assignments'
+import { FacultyDoubtsPage } from './pages/faculty/Doubts'
 
 // Student Pages
 import { StudentDashboard } from './pages/student/Dashboard'
@@ -32,6 +33,7 @@ import { StudentGradesPage } from './pages/student/Grades'
 import { StudentForumPage } from './pages/student/Forum'
 import { StudentCertificatesPage } from './pages/student/Certificates'
 import { StudentAIChatPage } from './pages/student/AIChat'
+import { StudentDoubtsPage } from './pages/student/Doubts'
 import { LiveClassesPage } from './pages/live/LiveClasses'
 import { CalendarPage } from './pages/calendar/Calendar'
 
@@ -96,6 +98,7 @@ export const App = () => {
                 <Route path="/materials" element={<FacultyMaterialsPage />} />
                 <Route path="/lectures" element={<FacultyLecturesPage />} />
                 <Route path="/assignments" element={<FacultyAssignmentsPage />} />
+                <Route path="/doubts" element={<FacultyDoubtsPage />} />
                 <Route path="/live" element={<LiveClassesPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="*" element={<NotFound />} />
@@ -117,6 +120,7 @@ export const App = () => {
                 <Route path="/materials" element={<StudentMaterialsPage />} />
                 <Route path="/lectures" element={<StudentLecturesPage />} />
                 <Route path="/assignments" element={<StudentAssignmentsPage />} />
+                <Route path="/doubts" element={<StudentDoubtsPage />} />
                 <Route path="/grades" element={<StudentGradesPage />} />
                 <Route path="/forum" element={<StudentForumPage />} />
                 <Route path="/certificates" element={<StudentCertificatesPage />} />
