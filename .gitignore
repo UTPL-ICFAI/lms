@@ -6,6 +6,7 @@ server/.env
 frontend/.env
 **/.env
 **/.env.*
+!**/.env.example
 
 server/uploads/
 **/uploads/
