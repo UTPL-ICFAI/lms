@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Users, BookOpen, Bell } from 'lucide-react'
 import { AdminLayout } from '../../components/Layout'
 import { StatCard, Card } from '../../components/UI'
 import { dashboardService } from '../../services'
-import { handleApiError } from '../../utils/toast'
+import { handleApiError, toast } from '../../utils/toast'
 
 export const AdminDashboard = () => {
+  const navigate = useNavigate()
   const [stats, setStats] = useState({
     users: 0,
     students: 0,
@@ -78,13 +80,25 @@ export const AdminDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title="Quick Actions">
               <div className="space-y-3">
-                <button className="w-full text-left p-3 hover:bg-gray-100 rounded-lg transition">
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin/users')}
+                  className="w-full text-left p-3 hover:bg-gray-100 rounded-lg transition"
+                >
                   → Create New User
                 </button>
-                <button className="w-full text-left p-3 hover:bg-gray-100 rounded-lg transition">
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin/courses')}
+                  className="w-full text-left p-3 hover:bg-gray-100 rounded-lg transition"
+                >
                   → Manage Courses
                 </button>
-                <button className="w-full text-left p-3 hover:bg-gray-100 rounded-lg transition">
+                <button
+                  type="button"
+                  onClick={() => toast.info('Reports coming soon')}
+                  className="w-full text-left p-3 hover:bg-gray-100 rounded-lg transition"
+                >
                   → View Reports
                 </button>
               </div>
