@@ -9,6 +9,7 @@ This repository contains a role-based Learning Management System built with **Re
 - Faculty: course management, attendance, notices, and doubt replies
 - Student: enroll in courses, view attendance + notices, manage assignments/submissions, and raise doubts
 - Doubt system with **real-time updates** (Socket.IO)
+- AI Study Assistant with **RAG (materials-grounded answers)** via `/api/ai/chat-rag`
 
 ## Quick Start
 
@@ -51,4 +52,13 @@ Frontend runs on `http://localhost:3000`.
 - Backend API + env details: `BACKEND_ANALYSIS.md`
 - Frontend integration/setup guide: `FRONTEND_INTEGRATION_GUIDE.md`
 - Template file descriptions: `FRONTEND_TEMPLATE_FILES_GUIDE.md`
+
+## AI Study Assistant (RAG)
+
+The student AI assistant can ingest uploaded files and answer **only from your ingested content**.
+
+- **Ingest**: `POST /api/ai/ingest` (multipart form-data with `file` + `courseId`)
+- **Chat (RAG)**: `POST /api/ai/chat-rag` (`message`, `courseId`, optional `mode`, `difficulty`)
+
+Optional: If you configure MongoDB Atlas Vector Search and set `MONGO_VECTOR_SEARCH_INDEX`, the backend uses `$vectorSearch` for semantic retrieval.
 

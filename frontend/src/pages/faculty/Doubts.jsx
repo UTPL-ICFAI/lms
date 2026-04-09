@@ -76,7 +76,6 @@ export const FacultyDoubtsPage = () => {
         // ignore
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCourseId])
 
   useEffect(() => {

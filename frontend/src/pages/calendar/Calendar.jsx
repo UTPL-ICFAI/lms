@@ -32,7 +32,6 @@ export const CalendarPage = () => {
       }
     }
     if (userId) run()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   const create = async (e) => {

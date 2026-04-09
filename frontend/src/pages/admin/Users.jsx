@@ -70,7 +70,7 @@ export const UsersPage = () => {
     }
   }
 
-  const handleRestore = async (id) => {
+  const _handleRestore = async (id) => {
     try {
       await userService.restoreUser(id)
       toast.success('User restored successfully')

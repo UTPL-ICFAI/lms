@@ -93,7 +93,7 @@ export const CoursesPage = () => {
     }
   }
 
-  const handleRestore = async (id) => {
+  const _handleRestore = async (id) => {
     try {
       await courseService.restoreCourse(id)
       toast.success('Course restored successfully')

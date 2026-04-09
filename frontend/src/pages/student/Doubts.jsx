@@ -73,7 +73,6 @@ export const StudentDoubtsPage = () => {
         // ignore
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentId])
 
   useEffect(() => {

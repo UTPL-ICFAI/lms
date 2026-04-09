@@ -9,7 +9,7 @@ export const FacultyNotices = () => {
   const [notices, setNotices] = useState([])
   const [courses, setCourses] = useState([])
   const [showModal, setShowModal] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [_loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     title: '',
     description: '',

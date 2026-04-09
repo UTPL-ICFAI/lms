@@ -100,6 +100,8 @@ export const certificateService = {
 
 export const aiService = {
   chat: (data) => api.post('/ai/chat', data),
+  chatRag: (data) => api.post('/ai/chat-rag', data),
+  ingest: (formData) => api.post('/ai/ingest', formData),
 }
 
 export const plagiarismService = {
