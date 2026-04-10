@@ -345,3 +345,48 @@ exports.chatRag = async (req, res) => {
   }
 };
 
+exports.summarizeMaterial = async (req, res) => {
+  try {
+    const user = req.user;
+    const { materialId, courseId = null, difficulty = "beginner" } = req.body || {};
+
+    if (!materialId) return res.status(400).json({ message: "materialId is required" });
+    if (courseId) await assertCourseAccess({ user, courseId });
+
+    const limit = Math.max(4, Math.min(24, Number(process.env.RAG_SUMMARY_MAX_CHUNKS || 16)));
+    const chunks = await StudyChunk.find({
+      ownerUserId: user._id,
+      materialId,
+      ...(courseId ? { courseId } : {}),
+    })
+      .sort({ "metadata.chunkIndex": 1, createdAt: 1 })
+      .limit(limit)
+      .lean();
+
+    if (!chunks.length) {
+      return res.json({ answer: "No relevant content found in your materials.", citations: [] });
+    }
+
+    const context = buildContextBlock(chunks);
+    const system = buildAgentSystemPrompt({ mode: "summarizer", difficulty });
+    const userPrompt =
+      `CONTEXT:\n${context}\n\n` +
+      `TASK:\nSummarize this material into clear bullet points based ONLY on the context.\n` +
+      `Include citations like [S1], [S2] where relevant.`;
+
+    const answer = await callLLM({ system, user: userPrompt });
+    const citations = chunks.slice(0, 6).map((c, i) => ({
+      tag: `S${i + 1}`,
+      chunkId: c._id,
+      subject: c.subject || "",
+      chapter: c.chapter || "",
+      topic: c.topic || "",
+      snippet: String(c.content || "").slice(0, 320),
+    }));
+
+    return res.json({ answer: answer || "No relevant content found in your materials.", citations });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+

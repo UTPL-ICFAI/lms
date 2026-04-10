@@ -5,7 +5,7 @@ const authorizeRoles = require("../middleware/roleMiddleware");
 const { upload } = require("../middleware/uploadMiddleware");
 
 const { chat } = require("../controllers/aiController");
-const { ingestMaterial, chatRag } = require("../controllers/ragController");
+const { ingestMaterial, chatRag, summarizeMaterial } = require("../controllers/ragController");
 const { webSearch } = require("../controllers/webSearchController");
 
 router.post("/chat", protect, chat);
@@ -17,6 +17,7 @@ router.post(
   ingestMaterial
 );
 router.post("/chat-rag", protect, authorizeRoles("student", "faculty", "admin"), chatRag);
+router.post("/summarize-material", protect, authorizeRoles("student", "faculty", "admin"), summarizeMaterial);
 router.post("/web-search", protect, authorizeRoles("student", "faculty", "admin"), webSearch);
 
 module.exports = router;

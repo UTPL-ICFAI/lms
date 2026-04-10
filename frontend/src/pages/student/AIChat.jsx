@@ -137,6 +137,34 @@ export const StudentAIChatPage = () => {
         chunksCreated: res.data.chunksCreated,
         embeddingModel: res.data.embeddingModel,
       })
+      // If the user selected Summarizer mode, auto-generate summary in chat immediately.
+      if (assistantMode === 'materials' && mode === 'summarizer' && res.data?.materialId) {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'user', text: `Summarize: ${file.name}` },
+        ])
+        try {
+          const sumRes = await aiService.summarizeMaterial({
+            materialId: res.data.materialId,
+            courseId: selectedCourseId,
+            difficulty,
+          })
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', text: sumRes.data.answer, citations: sumRes.data.citations || [] },
+          ])
+        } catch (err) {
+          handleApiError(err)
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              text: 'Summary failed. Please try again or ask a specific question from the material.',
+              citations: [],
+            },
+          ])
+        }
+      }
       // refresh visible materials list for the course
       const mRes = await materialService.getByCourse(selectedCourseId)
       setMaterials(mRes.data || [])
