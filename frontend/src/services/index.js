@@ -102,6 +102,7 @@ export const aiService = {
   chat: (data) => api.post('/ai/chat', data),
   chatRag: (data) => api.post('/ai/chat-rag', data),
   ingest: (formData) => api.post('/ai/ingest', formData),
+  webSearch: (data) => api.post('/ai/web-search', data),
 }
 
 export const plagiarismService = {

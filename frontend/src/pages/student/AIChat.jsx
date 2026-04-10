@@ -13,6 +13,7 @@ export const StudentAIChatPage = () => {
   const [materials, setMaterials] = useState([])
   const [mode, setMode] = useState('explainer')
   const [difficulty, setDifficulty] = useState('beginner')
+  const [assistantMode, setAssistantMode] = useState('materials') // materials | web
   const [uploading, setUploading] = useState(false)
   const [ingesting, setIngesting] = useState(false)
   const [ingestResult, setIngestResult] = useState(null)
@@ -52,29 +53,41 @@ export const StudentAIChatPage = () => {
   const send = async (e) => {
     e.preventDefault()
     if (!message.trim()) return
-    if (!canChat) return toast.error('Select a course first')
+    if (assistantMode === 'materials' && !canChat) return toast.error('Select a course first')
     const userMsg = { role: 'user', text: message.trim() }
     setMessages((prev) => [...prev, userMsg])
     setMessage('')
     setLoading(true)
     try {
-      const res = await aiService.chatRag({
-        message: userMsg.text,
-        courseId: selectedCourseId,
-        mode,
-        difficulty,
-        topK: 6,
-        chatId,
-      })
-      if (res.data?.chatId) setChatId(res.data.chatId)
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          text: res.data.answer,
-          citations: res.data.citations || [],
-        },
-      ])
+      if (assistantMode === 'web') {
+        const res = await aiService.webSearch({ query: userMsg.text, difficulty })
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: res.data.answer,
+            sources: res.data.sources || [],
+          },
+        ])
+      } else {
+        const res = await aiService.chatRag({
+          message: userMsg.text,
+          courseId: selectedCourseId,
+          mode,
+          difficulty,
+          topK: 6,
+          chatId,
+        })
+        if (res.data?.chatId) setChatId(res.data.chatId)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: res.data.answer,
+            citations: res.data.citations || [],
+          },
+        ])
+      }
     } catch (err) {
       handleApiError(err)
       setMessages((prev) => [
@@ -99,6 +112,7 @@ export const StudentAIChatPage = () => {
   }, [messages.length, loading])
 
   const ingest = async () => {
+    if (assistantMode === 'web') return toast.info('Switch to “My Materials (RAG)” to ingest files')
     if (!selectedCourseId) return toast.error('Select a course first')
     const file = fileRef.current?.files?.[0]
     if (!file) return toast.error('Choose a file to ingest')
@@ -141,11 +155,31 @@ export const StudentAIChatPage = () => {
         <Card title="Materials & Scope" className="lg:col-span-1">
           <div className="space-y-4">
             <div>
+              <label className="block text-sm font-semibold mb-2">Assistant</label>
+              <select
+                className="input"
+                value={assistantMode}
+                onChange={(e) => {
+                  setAssistantMode(e.target.value)
+                  setMessages([])
+                  setChatId(null)
+                }}
+              >
+                <option value="materials">My Materials (RAG)</option>
+                <option value="web">Web Search (General)</option>
+              </select>
+              <p className="text-xs text-gray-600 mt-1">
+                RAG answers only from your uploaded files. Web Search summarizes top results and includes links.
+              </p>
+            </div>
+
+            <div>
               <label className="block text-sm font-semibold mb-2">Course</label>
               <select
                 className="input"
                 value={selectedCourseId}
                 onChange={(e) => setSelectedCourseId(e.target.value)}
+                disabled={assistantMode === 'web'}
               >
                 <option value="">Select a course</option>
                 {courses.map((c) => (
@@ -192,6 +226,7 @@ export const StudentAIChatPage = () => {
                 type="file"
                 className="mt-3 block w-full text-sm"
                 accept=".pdf,.docx,.pptx,.png,.jpg,.jpeg,.txt"
+                disabled={assistantMode === 'web'}
               />
               <div className="mt-3 flex gap-2">
                 <Button type="button" variant="secondary" onClick={ingest} disabled={uploading || !selectedCourseId}>
@@ -280,6 +315,26 @@ export const StudentAIChatPage = () => {
                         </div>
                       </div>
                     )}
+                    {m.role === 'assistant' && Array.isArray(m.sources) && m.sources.length > 0 && (
+                      <div className="mt-2 text-left">
+                        <div className="text-xs font-semibold text-gray-700 mb-1">Web sources</div>
+                        <div className="space-y-2">
+                          {m.sources.slice(0, 6).map((s) => (
+                            <a
+                              key={s.link}
+                              href={s.link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block text-xs bg-white border rounded-lg p-2 hover:bg-gray-50"
+                            >
+                              <div className="font-semibold">{s.title || s.link}</div>
+                              <div className="text-gray-700 mt-1">{s.snippet}</div>
+                              <div className="text-blue-700 mt-1 break-all">{s.link}</div>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -296,7 +351,7 @@ export const StudentAIChatPage = () => {
                 required
               />
             </div>
-            <Button type="submit" disabled={loading || !selectedCourseId}>
+            <Button type="submit" disabled={loading || (assistantMode === 'materials' && !selectedCourseId)}>
               {loading ? '...' : 'Send'}
             </Button>
           </form>
