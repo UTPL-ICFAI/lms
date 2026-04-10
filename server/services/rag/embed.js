@@ -29,8 +29,12 @@ async function embedWithOpenAI(texts) {
 async function embedTexts(texts) {
   const input = Array.isArray(texts) ? texts : [String(texts || "")];
   const cleaned = input.map((t) => String(t || "").slice(0, 6000)); // safety cap per chunk
-  const res = await embedWithOpenAI(cleaned);
-  if (res) return res;
+  try {
+    const res = await embedWithOpenAI(cleaned);
+    if (res) return res;
+  } catch {
+    // Provider failure (quota/network/etc). We intentionally fall back to non-vector mode.
+  }
 
   // No embedding provider configured: return null vectors (retrieval will fall back to text search).
   return { vectors: cleaned.map(() => null), model: "" };
