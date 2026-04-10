@@ -15,6 +15,7 @@ export const StudentAIChatPage = () => {
   const [difficulty, setDifficulty] = useState('beginner')
   const [uploading, setUploading] = useState(false)
   const [ingesting, setIngesting] = useState(false)
+  const [ingestResult, setIngestResult] = useState(null)
   const [chatId, setChatId] = useState(null)
   const fileRef = useRef(null)
   const listRef = useRef(null)
@@ -76,6 +77,15 @@ export const StudentAIChatPage = () => {
       ])
     } catch (err) {
       handleApiError(err)
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          text:
+            'Sorry — the assistant failed to respond. Please try again in a few seconds.\n\nTip: make sure the backend is running and that you ingested at least one material for this course.',
+          citations: [],
+        },
+      ])
     } finally {
       setLoading(false)
     }
@@ -95,6 +105,7 @@ export const StudentAIChatPage = () => {
 
     setUploading(true)
     setIngesting(true)
+    setIngestResult(null)
     try {
       const fd = new FormData()
       fd.append('file', file)
@@ -107,6 +118,11 @@ export const StudentAIChatPage = () => {
 
       const res = await aiService.ingest(fd)
       toast.success(`Ingested (${res.data.chunksCreated} chunks)`)
+      setIngestResult({
+        fileName: file.name,
+        chunksCreated: res.data.chunksCreated,
+        embeddingModel: res.data.embeddingModel,
+      })
       // refresh visible materials list for the course
       const mRes = await materialService.getByCourse(selectedCourseId)
       setMaterials(mRes.data || [])
@@ -182,6 +198,21 @@ export const StudentAIChatPage = () => {
                   {uploading ? 'Uploading…' : 'Upload & Ingest'}
                 </Button>
               </div>
+              {ingestResult && (
+                <div className="mt-3 text-xs bg-white border rounded-lg p-2">
+                  <div className="font-semibold">Ingestion result</div>
+                  <div className="text-gray-700 mt-1">
+                    File: <span className="font-medium">{ingestResult.fileName}</span>
+                  </div>
+                  <div className="text-gray-700">
+                    Chunks created: <span className="font-medium">{ingestResult.chunksCreated}</span>
+                  </div>
+                  <div className="text-gray-700">
+                    Embedding model:{' '}
+                    <span className="font-medium">{ingestResult.embeddingModel || 'not configured'}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
